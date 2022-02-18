@@ -5,39 +5,42 @@ namespace FighterAI
 {
     public abstract class AI
     {
-        protected readonly FighterBehaviour _opponent;
+        protected static readonly float maxDistanceFromOpponent = 1f;
         protected readonly FighterBehaviour _fighterAI;
-        protected FighterHealth _fighterAIHealth;
-        
-        protected readonly float maxDistanceFromOpponent = 1f;
-        protected float _distanceFromOpponent;
-        protected float attackWaitTime = 2f;
-        protected float timeSinceLastAttack;
-        
-        protected float defensiveDamageThreshold = 15;
-        protected float blockDamageThreshold = 10;
-        protected float damageTakenSinceLastInterval = 0;
-        protected float timeInDefense = 0;
-        protected float defenseTime = 5f;
+        protected readonly FighterBehaviour _opponent;
         protected readonly AIStateMachine _stateMachine = new AIStateMachine();
-        
+        protected readonly float safeDistanceFromOpponent = maxDistanceFromOpponent * 2;
+        protected float _distanceFromOpponent;
+        protected FighterHealth _fighterAIHealth;
+        protected FighterHealth _opponentHealth;
+        protected float attackWaitTime = 2f;
+        protected float damageTakenSinceLastInterval;
+        protected float defenseTime = 5f;
+
+        protected float defensiveDamageThreshold = 15;
+        protected float timeInDefense = 0;
+        protected float timeSinceLastAttack;
+
         protected AI(FighterBehaviour fighterAI, FighterBehaviour opponent)
         {
             _fighterAI = fighterAI;
             _opponent = opponent;
+
             _fighterAIHealth = fighterAI.GetComponent<FighterHealth>();
-            _fighterAIHealth.OnDamaged += IncreaseDamageTaken;
+            _fighterAIHealth.OnDamaged += IncreaseDamageTakenSinceLastInterval;
+
+            _opponentHealth = _opponent.GetComponent<FighterHealth>();
         }
 
         protected abstract void Move();
         protected abstract void Attack();
         protected abstract void Defend();
 
-        private void IncreaseDamageTaken(float maxHealth, float currentHealth, float damage)
+        private void IncreaseDamageTakenSinceLastInterval(float maxHealth, float currentHealth, float damage)
         {
             damageTakenSinceLastInterval += damage;
         }
-        
+
         public abstract void Sim();
     }
 }

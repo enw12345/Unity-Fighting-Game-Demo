@@ -19,14 +19,15 @@ namespace Fighter
 
         [SerializeField] private BoxCollider rightLegHitBox;
 
-        public float damage = 10f;
-
         // Animation variables
         private bool _block, _jump;
         private float _direction;
 
         //Fighter stats
         private FighterHealth _health;
+        private Vector3 _maxRendererScreenSize;
+        private Vector3 _minRendererScreenSize;
+        private Bounds _renderSize;
         private float _up;
         private Vector3 _velocity;
         [NonSerialized] public bool Attacking;
@@ -40,6 +41,16 @@ namespace Fighter
 
             leftArmHitBox.enabled = false;
             rightLegHitBox.enabled = false;
+
+            // _renderSize = GetComponent<Renderer>().bounds;
+            _renderSize = GetComponent<BoxCollider>().bounds;
+        }
+
+
+        private void Start()
+        {
+            _maxRendererScreenSize = Camera.main.WorldToScreenPoint(_renderSize.max);
+            _minRendererScreenSize = Camera.main.WorldToScreenPoint(_renderSize.min);
         }
 
         // Update is called once per frame
@@ -48,6 +59,21 @@ namespace Fighter
             UpdateAnimator();
             if (_health.IsDead)
                 Defeat();
+
+            FixPosition();
+        }
+
+        private void FixPosition()
+        {
+            var screenPosition = Camera.main.WorldToScreenPoint(transform.position);
+            if (screenPosition.x > Screen.width)
+                transform.position = new Vector3(transform.position.x,
+                    transform.position.y,
+                    Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, screenPosition.y)).z);
+            else if (screenPosition.x < 0)
+                transform.position = new Vector3(transform.position.x,
+                    transform.position.y,
+                    Camera.main.ScreenToWorldPoint(new Vector2(0, screenPosition.y)).z);
         }
 
         public void MoveRight(float direction = 0)
@@ -107,6 +133,13 @@ namespace Fighter
                 _velocity.y = 0;
 
             var displacement = _velocity * Time.deltaTime;
+
+            var displacementScreenPosition = Camera.main.WorldToScreenPoint(transform.localPosition + displacement);
+
+            if (displacementScreenPosition.x > Screen.width)
+                // transform.position = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width - displacementScreenPosition.x, displacementScreenPosition.y));
+                return;
+            if (displacementScreenPosition.x < 0) return;
             transform.localPosition += displacement;
         }
 

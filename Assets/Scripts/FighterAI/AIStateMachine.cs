@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FighterAI
+﻿namespace FighterAI
 {
     public class AIStateMachine
     {
@@ -10,13 +8,11 @@ namespace FighterAI
             Defensive
         }
 
-        private States _currentState;
-        public States CurrentState => _currentState;
-        
+        public States CurrentState { get; private set; }
+
         public void ChangeState(States state)
         {
-            _currentState = state;
-            Debug.Log("Switching to " + state + " state");
+            CurrentState = state;
         }
     }
 }

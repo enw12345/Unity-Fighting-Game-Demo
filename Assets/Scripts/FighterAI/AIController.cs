@@ -1,4 +1,5 @@
 ﻿using Fighter;
+using Health;
 using UnityEngine;
 
 namespace FighterAI
@@ -7,25 +8,27 @@ namespace FighterAI
     {
         [SerializeField] private FighterBehaviour _fighterAI;
         [SerializeField] private FighterBehaviour _opponent;
-        [SerializeField] private float healthLossThreshHold;
+
+        private FighterHealth _health;
 
         //AI
-        private OffensiveAI _offenseiveAI;
+        private OffensiveAI _offensiveAI;
 
         private void Awake()
         {
             _fighterAI = GetComponent<FighterBehaviour>();
+            _health = GetComponent<FighterHealth>();
         }
 
         private void Start()
         {
-            _offenseiveAI = new OffensiveAI(_fighterAI, _opponent);
+            _offensiveAI = new OffensiveAI(_fighterAI, _opponent);
         }
 
         private void Update()
         {
-            _offenseiveAI.Sim();
+            if (!_health.IsDead && GameManager.GameManager.Instance.RoundStart)
+                _offensiveAI.Sim();
         }
-
     }
 }

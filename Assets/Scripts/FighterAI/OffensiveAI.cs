@@ -17,7 +17,7 @@ namespace FighterAI
                 case AIStateMachine.States.Offensive when _distanceFromOpponent > maxDistanceFromOpponent:
                     _fighterAI.MoveLeft(0);
                     break;
-                case AIStateMachine.States.Defensive when _distanceFromOpponent > maxDistanceFromOpponent:
+                case AIStateMachine.States.Defensive when _distanceFromOpponent < safeDistanceFromOpponent:
                     _fighterAI.MoveRight(1);
                     break;
                 default:
@@ -28,17 +28,22 @@ namespace FighterAI
 
         protected override void Attack()
         {
-            var randomAttack = Random.Range(0, 2);
-            if (timeSinceLastAttack >= attackWaitTime)
+            if (!_fighterAI.Attacking && _distanceFromOpponent <= maxDistanceFromOpponent)
             {
-                if (randomAttack == 1)
-                    _fighterAI.Kick();
-                else
-                    _fighterAI.Punch();
+                timeSinceLastAttack += Time.deltaTime;
+                if (timeSinceLastAttack >= attackWaitTime)
+                {
+                    var randomAttack = Random.Range(0, 2);
+                    if (randomAttack == 1)
+                        _fighterAI.Kick();
+                    else
+                        _fighterAI.Punch();
 
-                timeSinceLastAttack = 0;
+                    timeSinceLastAttack = 0;
+                }
             }
         }
+
 
         protected override void Defend()
         {
@@ -46,39 +51,34 @@ namespace FighterAI
 
         public override void Sim()
         {
-            
-            _distanceFromOpponent = Vector3.Distance(_fighterAI.transform.position, _opponent.transform.position);
-            Move();
-
-            if (_stateMachine.CurrentState == AIStateMachine.States.Offensive)
+            if (!_opponentHealth.IsDead)
             {
-                if (damageTakenSinceLastInterval > defensiveDamageThreshold )
+                _distanceFromOpponent = Vector3.Distance(_fighterAI.transform.position, _opponent.transform.position);
+                Move();
+                Attack();
+                if (_stateMachine.CurrentState == AIStateMachine.States.Offensive)
                 {
-                    _stateMachine.ChangeState(AIStateMachine.States.Defensive);
-                    damageTakenSinceLastInterval = 0;
+                    if (damageTakenSinceLastInterval > defensiveDamageThreshold)
+                    {
+                        _stateMachine.ChangeState(AIStateMachine.States.Defensive);
+                        damageTakenSinceLastInterval = 0;
+                    }
                 }
-            
-                if (_distanceFromOpponent <= maxDistanceFromOpponent)
+
+                else if (_stateMachine.CurrentState == AIStateMachine.States.Defensive)
                 {
-                    Attack();
-                
-                    timeSinceLastAttack += Time.deltaTime;
+                    timeInDefense += Time.deltaTime;
+                    if (timeInDefense < defenseTime)
+                    {
+                        Defend();
+                    }
+                    else
+                    {
+                        _stateMachine.ChangeState(AIStateMachine.States.Offensive);
+                        timeInDefense = 0;
+                    }
                 }
             }
-            
-            else if (_stateMachine.CurrentState == AIStateMachine.States.Defensive)
-            {
-                timeInDefense += Time.deltaTime;
-                if(timeInDefense < defenseTime)
-                    Defend();
-                else
-                {
-                    _stateMachine.ChangeState(AIStateMachine.States.Offensive);
-                    timeInDefense = 0;
-                }
-            }
-
         }
-        
     }
 }
