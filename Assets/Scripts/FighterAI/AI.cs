@@ -11,13 +11,13 @@ namespace FighterAI
         protected readonly AIStateMachine _stateMachine = new AIStateMachine();
         protected readonly float safeDistanceFromOpponent = maxDistanceFromOpponent * 2;
         protected float _distanceFromOpponent;
-        protected FighterHealth _fighterAIHealth;
-        protected FighterHealth _opponentHealth;
-        protected float attackWaitTime = 2f;
-        protected float damageTakenSinceLastInterval;
-        protected float defenseTime = 5f;
 
-        protected float defensiveDamageThreshold = 15;
+        protected readonly FighterHealth _opponentHealth;
+        protected readonly float attackWaitTime = 1f;
+        protected float damageTakenSinceLastInterval;
+        protected readonly float defenseTime = 5f;
+
+        protected const float defensiveDamageThreshold = 15;
         protected float timeInDefense = 0;
         protected float timeSinceLastAttack;
 
@@ -26,8 +26,8 @@ namespace FighterAI
             _fighterAI = fighterAI;
             _opponent = opponent;
 
-            _fighterAIHealth = fighterAI.GetComponent<FighterHealth>();
-            _fighterAIHealth.OnDamaged += IncreaseDamageTakenSinceLastInterval;
+            var fighterAIHealth = fighterAI.GetComponent<FighterHealth>();
+            fighterAIHealth.OnDamaged += IncreaseDamageTakenSinceLastInterval;
 
             _opponentHealth = _opponent.GetComponent<FighterHealth>();
         }

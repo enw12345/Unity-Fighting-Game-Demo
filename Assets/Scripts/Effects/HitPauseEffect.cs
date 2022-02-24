@@ -7,7 +7,7 @@ namespace Effects
     {
         private static bool _isPaused;
 
-        public static IEnumerator HitPause(float pauseTime = 0.1f)
+        public static IEnumerator HitPause(float pauseTime = 0.05f)
         {
             if (_isPaused) yield break;
             _isPaused = true;

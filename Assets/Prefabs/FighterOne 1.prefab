@@ -1826,7 +1826,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.31, y: 0.2, z: 0.2}
+  m_Size: {x: 0.61, y: 0.2, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3762853860482687248
 MonoBehaviour:
@@ -2381,7 +2381,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 118
   m_CollisionDetection: 0
 --- !u!65 &5298547820836457778
 BoxCollider:
@@ -2394,7 +2394,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.0672545, z: 0.71826935}
+  m_Size: {x: 0.4, y: 1.0672545, z: 0.45}
   m_Center: {x: 0, y: 1.2344484, z: 0.025265694}
 --- !u!114 &1673547855267522903
 MonoBehaviour:
@@ -2410,11 +2410,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
   maxSpeed: 1.5
-  maxAcceleration: 5.5
+  maxAcceleration: 2.5
   jumpHeight: 10
   leftArmHitBox: {fileID: 2961033836779431166}
   rightLegHitBox: {fileID: 3610980901537021625}
-  damage: 10
 --- !u!114 &6566040892759362603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2577,7 +2576,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.7, y: 1, z: 1}
+  m_Size: {x: 0.4, y: 1, z: 0.71}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8389355691876497143
 MonoBehaviour:

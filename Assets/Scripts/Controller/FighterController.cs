@@ -23,6 +23,10 @@ namespace Controller
 
         private void Controls()
         {
+            if (_fighterBehaviour.Attacking) return;
+            _fighterBehaviour.Block = Input.GetKey(KeyCode.S);
+            if (_fighterBehaviour.Block) return;
+                
             if (Input.GetKey(KeyCode.D))
                 _fighterBehaviour.MoveRight();
             else if (Input.GetKey(KeyCode.A))
@@ -30,16 +34,11 @@ namespace Controller
             else
                 _fighterBehaviour.Idle();
 
-            if (Input.GetKeyDown(KeyCode.W)) _fighterBehaviour.Jump();
+            // if (Input.GetKeyDown(KeyCode.W)) _fighterBehaviour.Jump();
 
-            // if (Input.GetKeyDown(KeyCode.S))
-            // {
-            //     _block = true;
-            // }
+            if (Input.GetMouseButtonDown(0)) _fighterBehaviour.Punch();
 
-            if (Input.GetMouseButtonDown(0) && !_fighterBehaviour.Attacking) _fighterBehaviour.Punch();
-
-            if (Input.GetMouseButtonDown(1) && !_fighterBehaviour.Attacking) _fighterBehaviour.Kick();
+            if (Input.GetMouseButtonDown(1)) _fighterBehaviour.Kick();
         }
     }
 }

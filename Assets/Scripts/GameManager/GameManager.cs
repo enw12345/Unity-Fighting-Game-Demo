@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Globalization;
 using Effects;
 using TMPro;
@@ -8,6 +9,7 @@ namespace GameManager
 {
     public class GameManager : MonoBehaviour
     {
+        private bool _gameStart = false;
         [SerializeField] private float countDownTime = 4;
         public static GameManager Instance { get; private set; }
         public bool RoundStart { get; private set; }
@@ -28,6 +30,16 @@ namespace GameManager
 
         private void Start()
         {
+            _countDownText.fontSize = 50;
+            _countDownText.text = "Press Any Key To Start";
+        }
+
+        private void Update()
+        {
+            if (_gameStart) return;
+            if (!Input.anyKey) return;
+            _gameStart = true;
+            _countDownText.fontSize = 150;
             StartCoroutine(StartMatch());
         }
 
@@ -43,14 +55,18 @@ namespace GameManager
                 timer += 1;
                 roundStarts = countDownTime - timer;
                 print("Round Starts in: " + roundStarts);
-                if(roundStarts > 0)
-                StartCoroutine(_countDown.CountDown(roundStarts.ToString(CultureInfo.CurrentCulture)));
-                else
-                    StartCoroutine(_countDown.CountDown("FIGHT!"));
+                StartCoroutine(roundStarts > 0
+                    ? _countDown.CountDown(roundStarts.ToString(CultureInfo.CurrentCulture))
+                    : _countDown.CountDown("FIGHT!"));
                 yield return new WaitForSeconds(1);
             }
             RoundStart = true;
             print("ROUND START!");
+        }
+
+        private void GameOver()
+        {
+            
         }
     }
 }

@@ -51,21 +51,23 @@ namespace FighterAI
 
         public override void Sim()
         {
-            if (!_opponentHealth.IsDead)
+            if (_opponentHealth.IsDead) return;
+            _distanceFromOpponent = Vector3.Distance(_fighterAI.transform.position, _opponent.transform.position);
+            Move();
+            Attack();
+            switch (_stateMachine.CurrentState)
             {
-                _distanceFromOpponent = Vector3.Distance(_fighterAI.transform.position, _opponent.transform.position);
-                Move();
-                Attack();
-                if (_stateMachine.CurrentState == AIStateMachine.States.Offensive)
+                case AIStateMachine.States.Offensive:
                 {
                     if (damageTakenSinceLastInterval > defensiveDamageThreshold)
                     {
                         _stateMachine.ChangeState(AIStateMachine.States.Defensive);
                         damageTakenSinceLastInterval = 0;
                     }
-                }
 
-                else if (_stateMachine.CurrentState == AIStateMachine.States.Defensive)
+                    break;
+                }
+                case AIStateMachine.States.Defensive:
                 {
                     timeInDefense += Time.deltaTime;
                     if (timeInDefense < defenseTime)
@@ -77,6 +79,8 @@ namespace FighterAI
                         _stateMachine.ChangeState(AIStateMachine.States.Offensive);
                         timeInDefense = 0;
                     }
+
+                    break;
                 }
             }
         }

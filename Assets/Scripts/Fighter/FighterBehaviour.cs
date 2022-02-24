@@ -20,17 +20,25 @@ namespace Fighter
         [SerializeField] private BoxCollider rightLegHitBox;
 
         // Animation variables
-        private bool _block, _jump;
+        private bool _jump;
+
+        public bool Block { get; set; }
+
         private float _direction;
 
         //Fighter stats
         private FighterHealth _health;
-        private Vector3 _maxRendererScreenSize;
-        private Vector3 _minRendererScreenSize;
-        private Bounds _renderSize;
-        private float _up;
+        // private float _up;
         private Vector3 _velocity;
         [NonSerialized] public bool Attacking;
+        
+        private static readonly int Kick1 = Animator.StringToHash("kick");
+        private static readonly int Attack = Animator.StringToHash("attack");
+        private static readonly int Hit1 = Animator.StringToHash("hit");
+        private static readonly int Death = Animator.StringToHash("death");
+        private static readonly int Velocity = Animator.StringToHash("velocity");
+        private static readonly int Direction = Animator.StringToHash("direction");
+        private static readonly int Block1 = Animator.StringToHash("block");
 
         private void Awake()
         {
@@ -41,16 +49,6 @@ namespace Fighter
 
             leftArmHitBox.enabled = false;
             rightLegHitBox.enabled = false;
-
-            // _renderSize = GetComponent<Renderer>().bounds;
-            _renderSize = GetComponent<BoxCollider>().bounds;
-        }
-
-
-        private void Start()
-        {
-            _maxRendererScreenSize = Camera.main.WorldToScreenPoint(_renderSize.max);
-            _minRendererScreenSize = Camera.main.WorldToScreenPoint(_renderSize.min);
         }
 
         // Update is called once per frame
@@ -59,23 +57,8 @@ namespace Fighter
             UpdateAnimator();
             if (_health.IsDead)
                 Defeat();
-
-            FixPosition();
         }
-
-        private void FixPosition()
-        {
-            var screenPosition = Camera.main.WorldToScreenPoint(transform.position);
-            if (screenPosition.x > Screen.width)
-                transform.position = new Vector3(transform.position.x,
-                    transform.position.y,
-                    Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, screenPosition.y)).z);
-            else if (screenPosition.x < 0)
-                transform.position = new Vector3(transform.position.x,
-                    transform.position.y,
-                    Camera.main.ScreenToWorldPoint(new Vector2(0, screenPosition.y)).z);
-        }
-
+        
         public void MoveRight(float direction = 0)
         {
             Movement(1);
@@ -103,26 +86,16 @@ namespace Fighter
 
         public void Jump()
         {
-            if (!_jump)
-            {
-                _up = 1;
-                _jump = true;
-            }
-            else
-            {
-                _up = 0;
-                _jump = false;
-            }
+            _jump = !_jump;
         }
 
         public void Kick()
         {
-            animator.SetTrigger("kick");
+            animator.SetTrigger(Kick1);
         }
 
         private void Movement(float forwardDirection)
         {
-            //Use acceleration as a way to smoothly increase velocity
             var desiredVelocity = new Vector3(0, 0, forwardDirection) * maxSpeed;
             var maxSpeedChange = maxAcceleration * Time.deltaTime;
             _velocity.z = Mathf.MoveTowards(_velocity.z, desiredVelocity.z, maxSpeedChange);
@@ -134,23 +107,18 @@ namespace Fighter
 
             var displacement = _velocity * Time.deltaTime;
 
-            var displacementScreenPosition = Camera.main.WorldToScreenPoint(transform.localPosition + displacement);
-
-            if (displacementScreenPosition.x > Screen.width)
-                // transform.position = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width - displacementScreenPosition.x, displacementScreenPosition.y));
-                return;
-            if (displacementScreenPosition.x < 0) return;
             transform.localPosition += displacement;
         }
 
         public void Punch()
         {
-            animator.SetTrigger("attack");
+            animator.SetTrigger(Attack);
         }
 
         public void Hit()
         {
-            animator.SetTrigger("hit");
+            animator.SetTrigger(Hit1);
+            Attacking = false;
         }
 
         public void TakeDamage(float damage)
@@ -160,14 +128,15 @@ namespace Fighter
 
         private void Defeat()
         {
-            animator.SetBool("death", true);
+            animator.SetBool(Death, true);
         }
 
+        
         private void UpdateAnimator()
         {
-            animator.SetFloat("velocity", Mathf.Abs(_velocity.z));
-            animator.SetFloat("direction", _direction);
-            animator.SetBool("block", _block);
+            animator.SetFloat(Velocity, Mathf.Abs(_velocity.z));
+            animator.SetFloat(Direction, _direction);
+            animator.SetBool(Block1, Block);
         }
 
         public void ActivateLightAttackHitBox()
